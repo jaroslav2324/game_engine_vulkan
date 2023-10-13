@@ -24,10 +24,14 @@ if (UNIX)
     find_library(ENGINE_LIB "enginelib" PATHS build)
 endif(UNIX)
 
+find_package(SDL3 REQUIRED)
+include_directories(${SDL3_INCLUDE_DIRS})
+
 set(TEST_SOURCE_FILES "../test/src/main.cpp")
+
 
 include_directories(${LIB_INCLUDE_FOLDER})
 
 add_executable(testengine ${TEST_SOURCE_FILES})
-target_link_libraries(testengine ${ENGINE_LIB})
+target_link_libraries(testengine ${ENGINE_LIB} ${SDL3_LIBRARIES})
 
