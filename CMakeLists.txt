@@ -17,8 +17,12 @@ set (CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 add_library(enginelib SHARED ${LIB_SOURCE_FILES})
 
 
-
-find_library(ENGINE_LIB "enginelib")
+if (WIN32)
+    find_library(ENGINE_LIB "enginelib")
+endif(WIN32)
+if (UNIX)
+    find_library(ENGINE_LIB "enginelib" PATHS build)
+endif(UNIX)
 
 set(TEST_SOURCE_FILES "../test/src/main.cpp")
 
