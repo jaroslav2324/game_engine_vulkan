@@ -19,13 +19,19 @@ add_library(enginelib SHARED ${LIB_SOURCE_FILES})
 
 if (WIN32)
     find_library(ENGINE_LIB "enginelib")
+
+    set(SDL3_INCLUDE_DIRS "C:/Libs/SDL/include")
+    include_directories(${SDL3_INCLUDE_DIRS})
+    set(SDL3_LIBRARIES "C:/Libs/SDL3/SDL3.lib")
 endif(WIN32)
+
 if (UNIX)
     find_library(ENGINE_LIB "enginelib" PATHS build)
+
+    find_package(SDL3 REQUIRED)
+    include_directories(${SDL3_INCLUDE_DIRS})
 endif(UNIX)
 
-find_package(SDL3 REQUIRED)
-include_directories(${SDL3_INCLUDE_DIRS})
 
 set(TEST_SOURCE_FILES "../test/src/main.cpp")
 
