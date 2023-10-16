@@ -6,38 +6,15 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "clang++")
 
-project(game_engine)
-
-
-set (LIB_INCLUDE_FOLDER "../engine/include")
-set (LIB_SOURCE_FILES "../engine/src/test.cpp")
-
 set (CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-add_library(enginelib SHARED ${LIB_SOURCE_FILES})
+project(game_engine)
 
+# message(STATUS "Building all targets...")
+# message("Current source dir: " ${CMAKE_CURRENT_SOURCE_DIR})
+# message("Current binary dir: " ${CMAKE_CURRENT_BINARY_DIR})
 
-if (WIN32)
-    find_library(ENGINE_LIB "enginelib")
+add_subdirectory(engine)
+add_subdirectory(test)
 
-    set(SDL3_INCLUDE_DIRS "C:/Libs/SDL/include")
-    include_directories(${SDL3_INCLUDE_DIRS})
-    set(SDL3_LIBRARIES "C:/Libs/SDL3/SDL3.lib")
-endif(WIN32)
-
-if (UNIX)
-    find_library(ENGINE_LIB "enginelib" PATHS build)
-
-    find_package(SDL3 REQUIRED)
-    include_directories(${SDL3_INCLUDE_DIRS})
-endif(UNIX)
-
-
-set(TEST_SOURCE_FILES "../test/src/main.cpp")
-
-
-include_directories(${LIB_INCLUDE_FOLDER})
-
-add_executable(testengine ${TEST_SOURCE_FILES})
-target_link_libraries(testengine ${ENGINE_LIB} ${SDL3_LIBRARIES})
 
