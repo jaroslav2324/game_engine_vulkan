@@ -6,6 +6,7 @@ set (LIB_INCLUDE_FOLDER ${CMAKE_SOURCE_DIR}/engine/include)
 find_library(ENGINE_LIB "engine" PATHS ${CMAKE_SOURCE_DIR}/build/engine)
 
 if (WIN32)
+    set(SDL3_INCLUDE_DIRS "C:\\Libs\\SDL\\include")
     set(SDL3_LIBRARIES "C:/Libs/SDL3/SDL3.lib")
 endif(WIN32)
 
@@ -17,5 +18,5 @@ endif(UNIX)
 set(TEST_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
 add_executable(testengine ${TEST_SOURCE_FILES})
-target_include_directories(testengine PRIVATE ${LIB_INCLUDE_FOLDER})
+target_include_directories(testengine PRIVATE ${LIB_INCLUDE_FOLDER} PRIVATE ${SDL3_INCLUDE_DIRS})
 target_link_libraries(testengine ${ENGINE_LIB} ${SDL3_LIBRARIES})
