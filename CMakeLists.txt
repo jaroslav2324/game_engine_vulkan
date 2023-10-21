@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "clang++")
 
-set (CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+# set (CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 project(game_engine)
 

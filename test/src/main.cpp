@@ -10,8 +10,8 @@ int main(int argc, char* argv[]){
     }
 
     std::cout << test_sum(3, 6) << std::endl;
-    std::cout << test_min(3, 6) << std::endl;
-    std::cout << test_min(7, 1) << std::endl;
+    //std::cout << test_min(3, 6) << std::endl;
+    //std::cout << test_min(7, 1) << std::endl;
 
     SDL_Window* win = SDL_CreateWindow("test", 800, 800, 0);
     if (win == 0){

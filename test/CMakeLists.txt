@@ -19,6 +19,6 @@ endif(UNIX)
 
 set(TEST_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
-add_executable(testengine ${TEST_SOURCE_FILES})
+add_executable(testengine ${TEST_SOURCE_FILES} )
 target_include_directories(testengine PRIVATE ${LIB_INCLUDE_FOLDER} PRIVATE ${SDL3_INCLUDE_DIRS})
 target_link_libraries(testengine ${ENGINE_LIB} ${SDL3_LIBRARIES})

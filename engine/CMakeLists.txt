@@ -4,7 +4,9 @@ project(engine)
 
 if (WIN32)
     set(SDL3_INCLUDE_DIRS "C:/Libs/SDL/include")
-    set(SDL3_LIBRARIES "C:/Libs/SDL3/SDL3.lib")
+
+    find_library(SDL3_LIBRARIES NAMES SDL3 SDL3main PATHS C:/Libs/SDL3/)
+    message(${SDL3_LIBRARIES})
 endif(WIN32)
 
 if (UNIX)
@@ -16,4 +18,6 @@ set (LIB_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/test.cpp)
 
 add_library(engine SHARED ${LIB_SOURCE_FILES})
 target_include_directories(engine PUBLIC ${SDL3_INCLUDE_DIRS})
+target_link_libraries(engine PUBLIC ${SDL3_LIBRARIES})
+target_compile_definitions(engine PRIVATE ENGINE_EXPORTS)
 
