@@ -7,3 +7,4 @@
 #endif
 
 EXPORTLIB int test_sum(int a, int b);
+EXPORTLIB int test_min(int a, int b);
