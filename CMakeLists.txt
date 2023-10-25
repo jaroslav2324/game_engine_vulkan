@@ -25,6 +25,7 @@ set (LIB_INCLUDE_FOLDER ${CMAKE_SOURCE_DIR}/engine/include)
 add_library(engine SHARED ${LIB_SOURCE_FILES})
 target_include_directories(engine PUBLIC ${SDL3_INCLUDE_DIRS})
 target_link_libraries(engine ${SDL3_LIBRARIES})
+target_compile_definitions(engine PRIVATE ENGINE_EXPORTS)
 
 
 
