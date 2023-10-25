@@ -23,7 +23,7 @@ extern "C"
 #endif
 
 EXPORTLIB int CALLCDECL test_sum(int a, int b);
-// EXPORTLIB int CALLCDECL test_min(int a, int b);
+EXPORTLIB int CALLCDECL test_min(int a, int b);
 
 #ifdef __cplusplus
 }
