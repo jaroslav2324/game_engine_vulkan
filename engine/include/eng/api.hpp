@@ -18,6 +18,8 @@
 
 #define CALLCDECL __cdecl
 
-EXPORTLIB int CALLCDECL test_sum(int a, int b);
-EXPORTLIB int CALLCDECL test_min(int a, int b);
-
+#ifdef NDEBUG
+    const bool ENG_VALIDATION_LAYERS_ENABLED = false;
+#else
+    const bool ENG_VALIDATION_LAYERS_ENABLED = true;
+#endif

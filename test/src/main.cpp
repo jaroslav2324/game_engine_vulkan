@@ -45,10 +45,10 @@ int main() {
     //std::cout << test_min(1, 2) << std::endl;
 
     Engine eng;
-    eng.eng_startup();
+    eng.startup();
     std::cout << "Starting loop\n";
     eng.loop();
-    eng.eng_shutdown();
+    eng.shutdown();
 
     return EXIT_SUCCESS;
 }

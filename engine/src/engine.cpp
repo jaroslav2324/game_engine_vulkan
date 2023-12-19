@@ -1,9 +1,9 @@
 #include "../include/eng/engine.hpp"
 
-
-int Engine::eng_startup(){
+// engine startup. Initializes GLFW and Vulkan
+int Engine::startup(){
     const int WIDTH = 800;
-    const int HEIGHT = 800;
+    const int HEIGHT = 600;
 
     glfwInit();
 
@@ -17,8 +17,8 @@ int Engine::eng_startup(){
     return 0;
 }
 
-
-int Engine::eng_shutdown(){
+// engine startup. Stops GLFW and Vulkan
+int Engine::shutdown(){
     vkDestroyInstance(instance, nullptr);
     glfwDestroyWindow(window);
     glfwTerminate();
@@ -28,6 +28,7 @@ int Engine::eng_shutdown(){
     return 0;
 }
 
+// engine loop
 int Engine::loop(){
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -41,9 +42,16 @@ VkResult Engine::createVulkanInstance(){
 
     std::cout << "Creating Vulkan instance...\n";
 
-    // if (enableValidationLayers && !checkValidationLayerSupport()) {
-    //     throw std::runtime_error("validation layers requested, but not available!");
-    // }
+    // TODO change if more layers will be used
+    const std::vector<const char*> awaitedValidationLayers = {
+        "VK_LAYER_KHRONOS_validation"
+    };
+
+    if (ENG_VALIDATION_LAYERS_ENABLED && !checkValidationLayerSupport(awaitedValidationLayers)) {
+        std::cout << "validation layers requested, but not available!\n";
+        // TODO change to known
+        return VK_ERROR_UNKNOWN;
+    }
 
     VkApplicationInfo info{};
     info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -65,7 +73,12 @@ VkResult Engine::createVulkanInstance(){
     createInfo.enabledExtensionCount = glfwExtensionCount;
     createInfo.ppEnabledExtensionNames = glfwExtensions;
 
-    createInfo.enabledLayerCount = 0;
+    if (ENG_VALIDATION_LAYERS_ENABLED) {
+        createInfo.enabledLayerCount = static_cast<uint32_t>(awaitedValidationLayers.size());
+        createInfo.ppEnabledLayerNames = awaitedValidationLayers.data();
+    } else {
+        createInfo.enabledLayerCount = 0;
+    }
 
     // TODO change return code
     VkResult res = vkCreateInstance(&createInfo, nullptr, &instance);
@@ -77,4 +90,34 @@ VkResult Engine::createVulkanInstance(){
 
     // TODO change return code
     return VK_SUCCESS;
+}
+
+// compares awaited layers with available layers. returns true if all awaited layers found
+bool Engine::checkValidationLayerSupport(const std::vector<const char*>& awaitedLayers) {
+
+    VkResult result;
+    uint32_t layerCount;
+    result = vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+    if (result != VK_SUCCESS) return false;
+
+    std::vector<VkLayerProperties> availableLayers(layerCount);
+    result = vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+    if (result != VK_SUCCESS) return false;
+
+    for (const char* layerName : awaitedLayers) {
+        bool layerFound = false;
+
+        for (const auto& layerProperties : availableLayers) {
+            if (strcmp(layerName, layerProperties.layerName) == 0) {
+                layerFound = true;
+                break;
+            }
+        }
+
+        if (!layerFound) {
+            return false;
+        }
+    }
+
+    return true;    
 }

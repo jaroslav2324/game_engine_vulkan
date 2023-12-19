@@ -15,7 +15,7 @@ if (UNIX)
 
 endif(UNIX)
 
-set (LIB_ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/engine/src/test.cpp ${CMAKE_SOURCE_DIR}/engine/src/engine.cpp)
+set (LIB_ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/engine/src/engine.cpp)
 set (LIB_ENGINE_INCLUDE_FOLDER ${CMAKE_SOURCE_DIR}/engine/include)
 
 add_library(engine SHARED ${LIB_ENGINE_SOURCE_FILES})

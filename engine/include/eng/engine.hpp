@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
+#include <cstring>
 
 #define GLFW_INCLUDE_VULKAN // include vulkan with glfw
 #include <GLFW/glfw3.h>
@@ -10,18 +12,15 @@
 class EXPORTLIB Engine{
     public:
 
-    // engine startup. Initializes GLFW and Vulkan
-     int eng_startup();
-
-    // engine startup. Stops GLFW and Vulkan
-    int eng_shutdown();
-
-    // engine loop
+    int startup();
+    int shutdown();
     int loop();
 
     private:
 
     VkResult createVulkanInstance();
+    VkResult enableValidationLayers();
+    bool checkValidationLayerSupport(const std::vector<const char*>& awaitedLayers);
 
 
     // public:
