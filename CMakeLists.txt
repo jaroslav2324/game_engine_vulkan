@@ -10,12 +10,7 @@ set (CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 project(game_engine)
 
-
-if (UNIX)
-
-endif(UNIX)
-
-set (LIB_ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/engine/src/engine.cpp)
+set (LIB_ENGINE_SOURCE_FILES ${CMAKE_SOURCE_DIR}/engine/src/engine.cpp ${CMAKE_SOURCE_DIR}/engine/src/logging.cpp)
 set (LIB_ENGINE_INCLUDE_FOLDER ${CMAKE_SOURCE_DIR}/engine/include)
 
 add_library(engine SHARED ${LIB_ENGINE_SOURCE_FILES})
