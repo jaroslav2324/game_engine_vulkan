@@ -23,9 +23,9 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance,
 class EXPORTLIB Engine{
     public:
 
-    int startup();
-    int shutdown();
-    int loop();
+    engResult startup();
+    engResult shutdown();
+    engResult loop();
 
     private:
 

@@ -1,8 +1,6 @@
 #include "../include/eng/engine.hpp"
 
 
-
-
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, 
                                       const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, 
                                       const VkAllocationCallbacks* pAllocator, 
@@ -25,7 +23,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance,
 }
 
 // engine startup. Initializes GLFW and Vulkan
-int Engine::startup(){
+engResult Engine::startup(){
     const i32 WIDTH = 800;
     const i32 HEIGHT = 600;
 
@@ -53,11 +51,11 @@ int Engine::startup(){
         return ENG_RESULT_FAILURE;
     }
 
-    return 0;
+    return ENG_RESULT_SUCCESS;
 }
 
 // engine startup. Stops GLFW and Vulkan
-int Engine::shutdown(){
+engResult Engine::shutdown(){
 
     ENG_LOG_INFO("Engine shutting down...")
     //std::cout << "Shutting down...\n";
@@ -70,18 +68,17 @@ int Engine::shutdown(){
     glfwDestroyWindow(window);
     glfwTerminate();
 
-    // TODO change return code
-    return 0;
+    return ENG_RESULT_SUCCESS;
 }
 
 // engine loop
-int Engine::loop(){
+engResult Engine::loop(){
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
     }
 
-    // TODO change return code
-    return 0;
+
+    return ENG_RESULT_SUCCESS;
 }
 
 engResult Engine::createVulkanInstance(){
@@ -216,7 +213,9 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Engine::debugCallback(
     const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
     void* pUserData) {
 
+    ENG_SET_CONSOLE_TEXT_COLOUR_DARK_GREY
     std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
+    ENG_SET_CONSOLE_TEXT_COLOUR_DEFAULT
 
     return VK_FALSE;
 }
