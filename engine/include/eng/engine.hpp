@@ -2,6 +2,9 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
+#include <string>
+#include <set>
 #include <cstring>
 #include <optional>
 
@@ -13,6 +16,11 @@
 
 struct QueueFamilyIndices {
     std::optional<u32> graphicsFamily;
+    std::optional<u32> presentFamily;
+
+    bool isComplete(){
+        return graphicsFamily.has_value() && presentFamily.has_value();
+    }
 };
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, 
@@ -43,7 +51,8 @@ class EXPORTLIB Engine{
     engResult pickPhysicalDevice();
     int rateDeviceSuitability(VkPhysicalDevice physicalDevice);
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice physicalDevice);
-    engResult createlogicalDevice();
+    engResult createLogicalDevice();
+    engResult createVulkanSurface();
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -67,8 +76,10 @@ class EXPORTLIB Engine{
     // logical device
     VkDevice device;
     VkQueue graphicsQueue;
+    VkQueue presentQueue;
 
 
     // TODO move to renderer / window handler
+    VkSurfaceKHR vulkanSurface;
     GLFWwindow* window = nullptr;
 };

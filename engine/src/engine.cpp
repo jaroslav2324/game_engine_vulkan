@@ -1,6 +1,3 @@
-#include <map>
-#include <string>
-
 #include "../include/eng/engine.hpp"
 
 
@@ -49,15 +46,22 @@ engResult Engine::startup(){
         return ENG_RESULT_FAILURE;
     }
 
+    res = createVulkanSurface();
+    if (res != ENG_RESULT_SUCCESS){
+        return ENG_RESULT_FAILURE;
+    }
+
     res = pickPhysicalDevice();
     if (res != ENG_RESULT_SUCCESS){
         return ENG_RESULT_FAILURE;
     }
 
-    res = createlogicalDevice();
+    res = createLogicalDevice();
     if (res != ENG_RESULT_SUCCESS){
         return ENG_RESULT_FAILURE;
     }
+
+
 
     return ENG_RESULT_SUCCESS;
 }
@@ -65,7 +69,7 @@ engResult Engine::startup(){
 // engine startup. Stops GLFW and Vulkan
 engResult Engine::shutdown(){
 
-    ENG_LOG_INFO("Engine shutting down...")
+    ENG_LOG_INFO("Engine shutting down. Cleaning up everything...")
     //std::cout << "Shutting down...\n";
 
     vkDestroyDevice(device, nullptr);
@@ -74,6 +78,7 @@ engResult Engine::shutdown(){
         DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
     }
 
+    vkDestroySurfaceKHR(instance, vulkanSurface, nullptr);
     vkDestroyInstance(instance, nullptr);
     glfwDestroyWindow(window);
     glfwTerminate();
@@ -343,6 +348,13 @@ QueueFamilyIndices Engine::findQueueFamilies(VkPhysicalDevice physicalDevice){
     for (const auto& queueFamily: queueFamilies){
         if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT){
             indices.graphicsFamily = idx;
+
+            VkBool32 presentSupport = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, idx, vulkanSurface, &presentSupport);
+            if (presentSupport){
+                indices.presentFamily = idx;
+            }
+
             break;
         }
         idx++;
@@ -351,36 +363,38 @@ QueueFamilyIndices Engine::findQueueFamilies(VkPhysicalDevice physicalDevice){
     return indices;
 }
 
-engResult Engine::createlogicalDevice(){
+engResult Engine::createLogicalDevice(){
 
     ENG_LOG_INFO("Creating logical device...");
 
     QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
-    VkDeviceQueueCreateInfo queueCreateInfo{};
-    queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
-    queueCreateInfo.queueCount = 1;
+    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+    std::set<u32> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
 
     f32 queuePriority = 1.0;
-    queueCreateInfo.pQueuePriorities = &queuePriority;
 
-    // TODO use if needed
+    for (u32 queueFamily: uniqueQueueFamilies){
+        VkDeviceQueueCreateInfo queueCreateInfo{};
+        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queueCreateInfo.queueFamilyIndex = queueFamily;
+        queueCreateInfo.queueCount = 1;
+        queueCreateInfo.pQueuePriorities = &queuePriority;
+        queueCreateInfos.push_back(queueCreateInfo);
+    }
+
+    // TODO use if needed in the future
     VkPhysicalDeviceFeatures deviceFeatures{};
 
-    
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    createInfo.pQueueCreateInfos = &queueCreateInfo;
-    createInfo.queueCreateInfoCount = 1;
-
+    createInfo.pQueueCreateInfos = queueCreateInfos.data();
+    createInfo.queueCreateInfoCount = queueCreateInfos.size();
     createInfo.pEnabledFeatures = &deviceFeatures;
-
     // to be compatible with out-to-date Vulkan versions
     createInfo.enabledExtensionCount = 0;
     // createInfo.enabledExtensionCount = vulkanExtensions.size();
     // createInfo.ppEnabledExtensionNames = vulkanExtensions.data();
-
     if (ENG_VALIDATION_LAYERS_ENABLED){
         createInfo.enabledLayerCount = vulkanValidationLayers.size();
         createInfo.ppEnabledLayerNames = vulkanValidationLayers.data();
@@ -396,6 +410,15 @@ engResult Engine::createlogicalDevice(){
     }
     // request created with device graphics queue
     vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
+    vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
 
+    return ENG_RESULT_SUCCESS;
+}
+
+engResult Engine::createVulkanSurface(){
+    if (glfwCreateWindowSurface(instance, window, nullptr, &vulkanSurface) != VK_SUCCESS){
+        ENG_LOG_ERROR("Failed to create Vulkan window surface");
+        return ENG_RESULT_FAILURE;
+    }
     return ENG_RESULT_SUCCESS;
 }
