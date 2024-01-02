@@ -1,22 +1,20 @@
 # game_engine
 
-Project is intended for Linux Ubuntu 22.04 or Windows 11. Compatibility with other platforms is not guaranteed. 
+Project is being developed on Linux Ubuntu 22.04. Compatibility with other platforms is not guaranteed. 
 
 
-cmake must be installed and added to the PATH 
+cmake, make must be installed and added to the PATH 
 
 clang compiler must be installed and added to the PATH
 
 
-For Windows - Ninja generator for cmake must be installed and added to the PATH
-
-
 Dependencies:
 
-SDL3
+GLFW
 
-SDL3_image
+Vulkan SDK
 
-SDL3_ttf
+![Alt text](image.png)
 
-SDL3_mixer
+Use Vulkan installation tuturial to download Vulkan dependencies and configure it on your platform.
+
