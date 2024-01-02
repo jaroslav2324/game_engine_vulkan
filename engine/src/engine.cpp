@@ -54,6 +54,11 @@ engResult Engine::startup(){
         return ENG_RESULT_FAILURE;
     }
 
+    res = createlogicalDevice();
+    if (res != ENG_RESULT_SUCCESS){
+        return ENG_RESULT_FAILURE;
+    }
+
     return ENG_RESULT_SUCCESS;
 }
 
@@ -62,6 +67,8 @@ engResult Engine::shutdown(){
 
     ENG_LOG_INFO("Engine shutting down...")
     //std::cout << "Shutting down...\n";
+
+    vkDestroyDevice(device, nullptr);
 
     if (ENG_VALIDATION_LAYERS_ENABLED) {
         DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
@@ -88,12 +95,7 @@ engResult Engine::createVulkanInstance(){
 
     ENG_LOG_INFO("Creating Vulkan instance...")
 
-    // TODO change if more layers will be used
-    const std::vector<const char*> awaitedValidationLayers = {
-        "VK_LAYER_KHRONOS_validation"
-    };
-
-    if (ENG_VALIDATION_LAYERS_ENABLED && !checkValidationLayerSupport(awaitedValidationLayers)) {
+    if (ENG_VALIDATION_LAYERS_ENABLED && !checkValidationLayerSupport(vulkanValidationLayers)) {
         ENG_LOG_ERROR("Validation layers requested, but not available!")
         return ENG_RESULT_FAILURE;
     }
@@ -118,14 +120,16 @@ engResult Engine::createVulkanInstance(){
     if (ENG_VALIDATION_LAYERS_ENABLED){
         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
+    //TODO replace lacal extentions
+    this->vulkanExtensions = extensions;
 
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
     if (ENG_VALIDATION_LAYERS_ENABLED) {
-        createInfo.enabledLayerCount = static_cast<uint32_t>(awaitedValidationLayers.size());
-        createInfo.ppEnabledLayerNames = awaitedValidationLayers.data();
+        createInfo.enabledLayerCount = static_cast<uint32_t>(vulkanValidationLayers.size());
+        createInfo.ppEnabledLayerNames = vulkanValidationLayers.data();
 
         populateDebugMessengerCreateInfo(debugCreateInfo);
         createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
@@ -345,4 +349,53 @@ QueueFamilyIndices Engine::findQueueFamilies(VkPhysicalDevice physicalDevice){
     }
 
     return indices;
+}
+
+engResult Engine::createlogicalDevice(){
+
+    ENG_LOG_INFO("Creating logical device...");
+
+    QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+
+    VkDeviceQueueCreateInfo queueCreateInfo{};
+    queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
+    queueCreateInfo.queueCount = 1;
+
+    f32 queuePriority = 1.0;
+    queueCreateInfo.pQueuePriorities = &queuePriority;
+
+    // TODO use if needed
+    VkPhysicalDeviceFeatures deviceFeatures{};
+
+    
+    VkDeviceCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    createInfo.pQueueCreateInfos = &queueCreateInfo;
+    createInfo.queueCreateInfoCount = 1;
+
+    createInfo.pEnabledFeatures = &deviceFeatures;
+
+    // to be compatible with out-to-date Vulkan versions
+    createInfo.enabledExtensionCount = 0;
+    // createInfo.enabledExtensionCount = vulkanExtensions.size();
+    // createInfo.ppEnabledExtensionNames = vulkanExtensions.data();
+
+    if (ENG_VALIDATION_LAYERS_ENABLED){
+        createInfo.enabledLayerCount = vulkanValidationLayers.size();
+        createInfo.ppEnabledLayerNames = vulkanValidationLayers.data();
+    }
+    else{
+        createInfo.enabledLayerCount = 0;
+    }
+
+    // create device
+    if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS){
+        ENG_LOG_ERROR("Failed to create a logical device");
+        return ENG_RESULT_FAILURE;
+    }
+    // request created with device graphics queue
+    vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
+
+    return ENG_RESULT_SUCCESS;
 }

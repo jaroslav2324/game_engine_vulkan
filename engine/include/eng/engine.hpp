@@ -43,6 +43,7 @@ class EXPORTLIB Engine{
     engResult pickPhysicalDevice();
     int rateDeviceSuitability(VkPhysicalDevice physicalDevice);
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice physicalDevice);
+    engResult createlogicalDevice();
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -54,8 +55,20 @@ class EXPORTLIB Engine{
 
     private:
     VkInstance instance;
+
+    // TODO change if more layers will be used
+    const std::vector<const char*> vulkanValidationLayers = {
+        "VK_LAYER_KHRONOS_validation"
+    };
+    std::vector<const char*> vulkanExtensions;
+
     VkDebugUtilsMessengerEXT debugMessenger;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+    // logical device
+    VkDevice device;
+    VkQueue graphicsQueue;
+
+
     // TODO move to renderer / window handler
     GLFWwindow* window = nullptr;
 };
