@@ -50,28 +50,40 @@ void logMessage(const char* message, engConsoleTextColour textColour, bool setDe
 
     #define ENG_LOG_VERBOSE(message)
     #define ENG_LOG_INFO(message)
+    #define ENG_LOG_INFO_MAGENTA(message)
+    #define ENG_LOG_INFO_CYAN(message)
     #define ENG_LOG_WARNING(message)
     #define ENG_LOG_ERROR(message)
 
 #else
 
-    #define ENG_LOG_VERBOSE(message) const char* pMessage = message;\
+    #define ENG_LOG_VERBOSE(message) {const char* pMessage = message;\
                                     logMessage(pMessage, ENG_CONSOLE_TEXT_COLOUR_DEFAULT, false, \
-                                                ENG_LOG_MESSAGE_TYPE_VERBOSE, ENG_LOG_NO_FILENAME, ENG_LOG_NO_LINE_NUMBER);
+                                                ENG_LOG_MESSAGE_TYPE_VERBOSE, ENG_LOG_NO_FILENAME, ENG_LOG_NO_LINE_NUMBER);}
 
-    #define ENG_LOG_INFO(message)    const char* pMessage = message;\
+    #define ENG_LOG_INFO(message)    {const char* pMessage = message;\
                                     const char* pFilename = __FILE__;\
                                     logMessage(pMessage, ENG_CONSOLE_TEXT_COLOUR_DEFAULT, false, \
-                                                ENG_LOG_MESSAGE_TYPE_INFO, ENG_LOG_NO_FILENAME, ENG_LOG_NO_LINE_NUMBER);
+                                                ENG_LOG_MESSAGE_TYPE_INFO, ENG_LOG_NO_FILENAME, ENG_LOG_NO_LINE_NUMBER);}
 
-    #define ENG_LOG_WARNING(message) const char* pMessage = message;\
+    #define ENG_LOG_INFO_MAGENTA(message)    {const char* pMessage = message;\
+                                    const char* pFilename = __FILE__;\
+                                    logMessage(pMessage, ENG_CONSOLE_TEXT_COLOUR_MAGENTA, true, \
+                                                ENG_LOG_MESSAGE_TYPE_INFO, ENG_LOG_NO_FILENAME, ENG_LOG_NO_LINE_NUMBER);}
+
+    #define ENG_LOG_INFO_CYAN(message)    {const char* pMessage = message;\
+                                    const char* pFilename = __FILE__;\
+                                    logMessage(pMessage, ENG_CONSOLE_TEXT_COLOUR_CYAN, true, \
+                                                ENG_LOG_MESSAGE_TYPE_INFO, ENG_LOG_NO_FILENAME, ENG_LOG_NO_LINE_NUMBER);}
+
+    #define ENG_LOG_WARNING(message) {const char* pMessage = message;\
                                     const char* pFilename = __FILE__;\
                                     logMessage(pMessage, ENG_CONSOLE_TEXT_COLOUR_YELLOW, true, \
-                                                ENG_LOG_MESSAGE_TYPE_WARNING, pFilename, __LINE__);
+                                                ENG_LOG_MESSAGE_TYPE_WARNING, pFilename, __LINE__);}
 
-    #define ENG_LOG_ERROR(message)   const char* pMessage = message;\
+    #define ENG_LOG_ERROR(message)   {const char* pMessage = message;\
                                     const char* pFilename = __FILE__;\
                                     logMessage(pMessage, ENG_CONSOLE_TEXT_COLOUR_RED, true, \
-                                                ENG_LOG_MESSAGE_TYPE_ERROR, pFilename, __LINE__);                                  
+                                                ENG_LOG_MESSAGE_TYPE_ERROR, pFilename, __LINE__);}                                  
 
 #endif

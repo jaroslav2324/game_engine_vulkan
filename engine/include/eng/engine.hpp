@@ -36,6 +36,7 @@ class EXPORTLIB Engine{
     engResult setupDebugMessenger();
     void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
     engResult pickPhysicalDevice();
+    int rateDeviceSuitability(VkPhysicalDevice physicalDevice);
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,

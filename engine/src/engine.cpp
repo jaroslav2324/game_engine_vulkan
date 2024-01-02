@@ -1,3 +1,6 @@
+#include <map>
+#include <string>
+
 #include "../include/eng/engine.hpp"
 
 
@@ -234,9 +237,85 @@ engResult Engine::pickPhysicalDevice(){
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
 
     if (deviceCount == 0){
-        ENG_LOG_ERROR("physical device not found")
+        ENG_LOG_ERROR("Physical device not found")
         return ENG_RESULT_FAILURE;
     }
 
+    std::vector<VkPhysicalDevice> devices(deviceCount);
+    vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+    // std::string str = std::to_string(deviceCount);
+    // ENG_LOG_ERROR(str.c_str());
+
+    std::multimap<int, VkPhysicalDevice> candidates;
+
+    for (const auto& device : devices){
+        // choose the most sutable device
+        int score = rateDeviceSuitability(device);
+        candidates.insert(std::make_pair(score, device));
+    }
+    if (candidates.rbegin()->first > 0){
+        physicalDevice = candidates.rbegin()->second;
+    }
+    else{
+        ENG_LOG_ERROR("Failed to find a suitable GPU");
+        return ENG_RESULT_FAILURE;
+    }
+
+    
+
     return ENG_RESULT_SUCCESS;
+}
+
+int Engine::rateDeviceSuitability(VkPhysicalDevice physicalDevice){
+
+    VkPhysicalDeviceProperties deviceProperties;
+    vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
+
+    VkPhysicalDeviceFeatures deviceFeatures;
+    vkGetPhysicalDeviceFeatures(physicalDevice, &deviceFeatures);
+
+    ENG_LOG_INFO_CYAN(deviceProperties.deviceName);
+
+    if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU){
+        ENG_LOG_INFO("This is discrete GPU");
+    }
+    else{
+        ENG_LOG_INFO("This is not discrete GPU");
+    }
+
+    if (deviceFeatures.geometryShader){
+        ENG_LOG_INFO("Geometry shaders are not supported");
+    }
+    else{
+        ENG_LOG_INFO("Geometry shaders are supported");
+    }
+
+    int score = 0;
+
+
+
+    if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU){
+        score += 2000;
+    }
+
+    if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU){
+        score += 1500;
+    }
+
+    if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU){
+        score += 1000;
+    }
+
+    if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_CPU){
+        score += 500;
+    }
+
+    score += deviceProperties.limits.maxImageDimension2D;
+
+    std::string scoreStr = std::to_string(score);
+    ENG_LOG_INFO("Device score:");
+    ENG_LOG_INFO(scoreStr.c_str());
+
+    return score;
+
 }
