@@ -3,12 +3,17 @@
 #include <iostream>
 #include <vector>
 #include <cstring>
+#include <optional>
 
 #define GLFW_INCLUDE_VULKAN // include vulkan with glfw
 #include <GLFW/glfw3.h>
 
 #include "api.hpp"
 #include "logging.hpp"
+
+struct QueueFamilyIndices {
+    std::optional<u32> graphicsFamily;
+};
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, 
                                       const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, 
@@ -37,6 +42,7 @@ class EXPORTLIB Engine{
     void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
     engResult pickPhysicalDevice();
     int rateDeviceSuitability(VkPhysicalDevice physicalDevice);
+    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice physicalDevice);
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,

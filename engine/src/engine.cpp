@@ -292,6 +292,12 @@ int Engine::rateDeviceSuitability(VkPhysicalDevice physicalDevice){
 
     int score = 0;
 
+    QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+    // increase score if needed queue families are present
+    if (indices.graphicsFamily.has_value()){
+        score += 500;
+    }
+
 
 
     if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU){
@@ -318,4 +324,25 @@ int Engine::rateDeviceSuitability(VkPhysicalDevice physicalDevice){
 
     return score;
 
+}
+
+QueueFamilyIndices Engine::findQueueFamilies(VkPhysicalDevice physicalDevice){
+    QueueFamilyIndices indices;
+
+    u32 queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
+
+    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies.data());
+
+    int idx = 0;
+    for (const auto& queueFamily: queueFamilies){
+        if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT){
+            indices.graphicsFamily = idx;
+            break;
+        }
+        idx++;
+    }
+
+    return indices;
 }
