@@ -7,6 +7,9 @@
 #include <set>
 #include <cstring>
 #include <optional>
+#include <cstdint>
+#include <limits>
+#include <algorithm>
 
 #define GLFW_INCLUDE_VULKAN // include vulkan with glfw
 #include <GLFW/glfw3.h>
@@ -21,6 +24,12 @@ struct QueueFamilyIndices {
     bool isComplete(){
         return graphicsFamily.has_value() && presentFamily.has_value();
     }
+};
+
+struct SwapChainSupportDetails{
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR> presentModes;
 };
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, 
@@ -53,6 +62,13 @@ class EXPORTLIB Engine{
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice physicalDevice);
     engResult createLogicalDevice();
     engResult createVulkanSurface();
+    bool isDeviceSuitable(VkPhysicalDevice physicalDevice);
+    bool checkDeviceExtensionSupport(VkPhysicalDevice physicalDevice);
+    SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice physicalDevice);
+    VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+    VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+    engResult createSwapChain();
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -69,6 +85,9 @@ class EXPORTLIB Engine{
     const std::vector<const char*> vulkanValidationLayers = {
         "VK_LAYER_KHRONOS_validation"
     };
+    const std::vector<const char*> deviceExtensions = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
     std::vector<const char*> vulkanExtensions;
 
     VkDebugUtilsMessengerEXT debugMessenger;
@@ -77,6 +96,10 @@ class EXPORTLIB Engine{
     VkDevice device;
     VkQueue graphicsQueue;
     VkQueue presentQueue;
+    VkSwapchainKHR swapChain;
+    std::vector<VkImage> swapChainImages;
+    VkFormat swapChainImageFormat;
+    VkExtent2D swapChainExtent;
 
 
     // TODO move to renderer / window handler
