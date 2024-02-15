@@ -71,6 +71,11 @@ engResult Engine::startup(){
         return ENG_RESULT_FAILURE;
     }
 
+    res = createGraphicsPipeline();
+    if (res != ENG_RESULT_SUCCESS){
+        return ENG_RESULT_FAILURE;
+    }
+
     return ENG_RESULT_SUCCESS;
 }
 
@@ -630,6 +635,13 @@ engResult Engine::createImageViews(){
             return ENG_RESULT_FAILURE;
         }
     }
+
+    return ENG_RESULT_SUCCESS;
+}
+
+engResult Engine::createGraphicsPipeline(){
+
+
 
     return ENG_RESULT_SUCCESS;
 }

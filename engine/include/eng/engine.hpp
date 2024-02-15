@@ -70,6 +70,7 @@ class EXPORTLIB Engine{
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
     engResult createSwapChain();
     engResult createImageViews();
+    engResult createGraphicsPipeline();
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
