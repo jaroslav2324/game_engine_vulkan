@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <map>
 #include <string>
@@ -71,6 +72,9 @@ class EXPORTLIB Engine{
     engResult createSwapChain();
     engResult createImageViews();
     engResult createGraphicsPipeline();
+    static std::vector<char> readShaderFile(const std::string& filename);
+    std::optional<VkShaderModule> createShaderModule(std::vector<char>& shaderFileCodeBuffer);
+
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,

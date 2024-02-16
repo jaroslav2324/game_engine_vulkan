@@ -641,7 +641,79 @@ engResult Engine::createImageViews(){
 
 engResult Engine::createGraphicsPipeline(){
 
+    // TODO set shader dir (std::optional?)
+    auto fragShaderFile = readShaderFile("../engine/shaders/build/frag.spv");
+    auto vertShaderFile = readShaderFile("../engine/shaders/build/vert.spv");
+    
+    if (fragShaderFile.size() == 0 || vertShaderFile.size() == 0){
+        ENG_LOG_ERROR("Shader file not found!");
+        return ENG_RESULT_FAILURE;
+    }
 
+    auto vertShaderOpt = createShaderModule(vertShaderFile);
+    auto fragShaderOpt = createShaderModule(fragShaderFile);
+
+    if (!vertShaderOpt.has_value() || !vertShaderOpt.has_value()){
+        ENG_LOG_ERROR("Error in shader module creation!");
+        return ENG_RESULT_FAILURE;
+    }
+
+    VkShaderModule vertShader = vertShaderOpt.value();
+    VkShaderModule fragShader = fragShaderOpt.value();
+
+
+    VkPipelineShaderStageCreateInfo vertShaderStageCreateInfo{};
+    vertShaderStageCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    vertShaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+    vertShaderStageCreateInfo.module = vertShader;
+    vertShaderStageCreateInfo.pName = "main";
+
+    VkPipelineShaderStageCreateInfo fragShaderStageCreateInfo{};
+    fragShaderStageCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    fragShaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    fragShaderStageCreateInfo.module = fragShader;
+    fragShaderStageCreateInfo.pName = "main";
+
+    VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageCreateInfo, fragShaderStageCreateInfo};
+
+
+    vkDestroyShaderModule(device, vertShader, nullptr);
+    vkDestroyShaderModule(device, fragShader, nullptr);
+    
 
     return ENG_RESULT_SUCCESS;
+}
+
+// returns vector with zero chars if file not exists
+std::vector<char> Engine::readShaderFile(const std::string& filename){
+    std::ifstream file(filename, std::ios::binary | std::ios::ate);
+
+    if (!file.is_open()){
+        return std::vector<char>();
+    }
+
+    size_t fileSize = (size_t) file.tellg();
+    std::vector<char> buffer(fileSize);
+
+    file.seekg(0);
+    file.read(buffer.data(), fileSize);
+
+    file.close();
+
+    return buffer;
+}
+
+std::optional<VkShaderModule> Engine::createShaderModule(std::vector<char>& shaderFileCodeBuffer){
+
+    VkShaderModuleCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = shaderFileCodeBuffer.size();
+    createInfo.pCode = reinterpret_cast<const uint32_t*> (shaderFileCodeBuffer.data());
+
+    VkShaderModule shaderModule;
+    if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS){
+        return std::nullopt;
+    }
+
+    return shaderModule;
 }
