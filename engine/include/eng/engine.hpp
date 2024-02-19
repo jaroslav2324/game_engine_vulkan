@@ -74,6 +74,8 @@ class EXPORTLIB Engine{
     engResult createGraphicsPipeline();
     static std::vector<char> readShaderFile(const std::string& filename);
     std::optional<VkShaderModule> createShaderModule(std::vector<char>& shaderFileCodeBuffer);
+    engResult createRenderPass();
+    
 
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -107,6 +109,9 @@ class EXPORTLIB Engine{
     VkFormat swapChainImageFormat;
     VkExtent2D swapChainExtent;
     std::vector<VkImageView> swapChainImageViews;
+    VkRenderPass renderPass;
+    VkPipelineLayout pipelineLayout;
+    VkPipeline graphicsPipeline;
 
 
     // TODO move to renderer / window handler
