@@ -81,6 +81,11 @@ engResult Engine::startup(){
         return ENG_RESULT_FAILURE;
     }
 
+    res = createFramebuffers();
+    if (res != ENG_RESULT_SUCCESS){
+        return ENG_RESULT_FAILURE;
+    }
+
     return ENG_RESULT_SUCCESS;
 }
 
@@ -89,6 +94,10 @@ engResult Engine::shutdown(){
 
     ENG_LOG_INFO("Engine shutting down. Cleaning up everything...")
     //std::cout << "Shutting down...\n";
+
+    for (auto framebuffer: swapChainFramebuffers){
+        vkDestroyFramebuffer(device, framebuffer, nullptr);
+    }
 
     vkDestroyPipeline(device, graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
@@ -876,6 +885,32 @@ engResult Engine::createRenderPass(){
         return ENG_RESULT_FAILURE;
     }
 
+
+    return ENG_RESULT_SUCCESS;
+}
+
+engResult Engine::createFramebuffers(){
+    swapChainFramebuffers.resize(swapChainImageViews.size());
+
+    for (size_t i = 0; i < swapChainImageViews.size(); i++){
+        VkImageView attachments[] = {
+            swapChainImageViews[i]
+        };
+
+        VkFramebufferCreateInfo framebufferInfo{};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.renderPass = renderPass;
+        framebufferInfo.attachmentCount = 1;
+        framebufferInfo.pAttachments = attachments;
+        framebufferInfo.width = swapChainExtent.width;
+        framebufferInfo.height = swapChainExtent.height;
+        framebufferInfo.layers = 1;
+
+        if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS){
+            ENG_LOG_ERROR("Failed to create framebuffer")
+            return ENG_RESULT_FAILURE;
+        }
+    }
 
     return ENG_RESULT_SUCCESS;
 }

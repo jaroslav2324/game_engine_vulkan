@@ -75,6 +75,7 @@ class EXPORTLIB Engine{
     static std::vector<char> readShaderFile(const std::string& filename);
     std::optional<VkShaderModule> createShaderModule(std::vector<char>& shaderFileCodeBuffer);
     engResult createRenderPass();
+    engResult createFramebuffers();
     
 
 
@@ -112,6 +113,7 @@ class EXPORTLIB Engine{
     VkRenderPass renderPass;
     VkPipelineLayout pipelineLayout;
     VkPipeline graphicsPipeline;
+    std::vector<VkFramebuffer> swapChainFramebuffers;
 
 
     // TODO move to renderer / window handler
