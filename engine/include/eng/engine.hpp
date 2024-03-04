@@ -76,8 +76,12 @@ class EXPORTLIB Engine{
     std::optional<VkShaderModule> createShaderModule(std::vector<char>& shaderFileCodeBuffer);
     engResult createRenderPass();
     engResult createFramebuffers();
-    
-
+    engResult createCommandPool();
+    engResult createCommandBuffer();
+    engResult recordCommandBuffer(VkCommandBuffer commandBuffer, u32 imageIndex);
+    void mainLoop();
+    engResult drawFrame();
+    engResult createSyncObjects();
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -114,6 +118,12 @@ class EXPORTLIB Engine{
     VkPipelineLayout pipelineLayout;
     VkPipeline graphicsPipeline;
     std::vector<VkFramebuffer> swapChainFramebuffers;
+    VkCommandPool commandPool;
+    VkCommandBuffer commandBuffer;
+
+    VkSemaphore imageAvailableSemaphore;
+    VkSemaphore renderFinishedSemaphore;
+    VkFence inFlightFence;
 
 
     // TODO move to renderer / window handler
