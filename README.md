@@ -1,6 +1,13 @@
 # game_engine
 
-Project is being developed on Linux Ubuntu 22.04. Compatibility with other platforms is not guaranteed. 
+Paused game engine project due to Vulkan complexity.
+
+Achieved results:
+
+![image](https://github.com/jaroslav2324/game_engine_vulkan/assets/94970404/0f0bcc12-d551-47db-bda4-3f94c631d8b5)
+
+
+Project has been developed on Linux Ubuntu 22.04. Compatibility with other platforms is not guaranteed. 
 
 
 cmake, make must be installed and added to the PATH 
